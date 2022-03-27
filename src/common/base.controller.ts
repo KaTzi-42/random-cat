@@ -9,7 +9,7 @@ export interface IControllerRoute {
   path: string;
   func: (req: Request, res: Response, next: NextFunction) => void;
   method: keyof Pick<Router, 'get' | 'post' | 'delete' | 'patch'>;
-  midleware?: IMiddleware[];
+  middleware?: IMiddleware[];
 }
 
 export class BaseController {
@@ -27,7 +27,7 @@ export class BaseController {
     for (const route of routes) {
       this.logger.log(`[${route.method.toUpperCase()}] ${route.path}`);
 
-      const middlewares = route.midleware?.map(m => m.middle.bind(m));
+      const middlewares = route.middleware?.map(m => m.middle.bind(m));
       const handler = route.func.bind(this);
       const pipe = middlewares ? [...middlewares, handler] : handler;
       this._router[route.method](route.path, pipe);
