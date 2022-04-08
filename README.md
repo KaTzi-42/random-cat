@@ -1,5 +1,5 @@
 ## Training project
-____
+
 It`s a simple REST project like a https://random-d.uk/
 
 Educational Plan
