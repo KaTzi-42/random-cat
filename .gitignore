@@ -1,4 +1,5 @@
 node_modules
+cats
 dist
 .eslintrc.json
 .eslintignore
