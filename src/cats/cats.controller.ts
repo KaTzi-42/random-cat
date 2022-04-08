@@ -6,7 +6,8 @@ import { HttpError } from '../error/httpError';
 import { LoggerService } from '../logger/logger.service';
 import { Role } from '../user/user.entity';
 import { FileManager } from '../utils/fileManager';
-import { CatDTO } from './cats.dto';
+import { CatCreateDTO } from './cats.dto';
+import { Cat } from './cats.entity';
 import { CatService } from './cats.service';
 import { FindCatOptions } from './findOptions';
 
@@ -25,13 +26,12 @@ export class CatController extends BaseController {
         func: this.create,
         middleware: [
           { middle: this.fileService.uploadHandler('test') },
-          new ValidateMiddleware(CatDTO)]
+          new ValidateMiddleware(CatCreateDTO)]
       },
       {
         path: '/cats',
         method: 'get',
         func: this.findAll,
-        //TODO добавить Проверку админа для валидации котов
       },
       {
         path: '/cats/:catId',
@@ -43,11 +43,16 @@ export class CatController extends BaseController {
         method: 'delete',
         func: this.delete,
         //TODO добавить Проверку админа
+      },
+      {
+        path: '/cats/:catId',
+        method: 'patch',
+        func: this.update
       }
     ]);
   }
 
-  async create(req: Request<{}, {}, CatDTO>, res: Response, next: NextFunction) {
+  async create(req: Request<{}, {}, CatCreateDTO>, res: Response, next: NextFunction) {
     try {
       if (!req.file)
         throw new HttpError(400, 'Отсутствует файл с котом');
@@ -75,19 +80,21 @@ export class CatController extends BaseController {
     }
   }
 
-  async findAll(req: Request<{}, {}, {}, FindCatOptions>, res: Response, next: NextFunction) {
+  async findAll(
+    { query, user }: Request<{}, {}, {}, FindCatOptions>,
+    res: Response,
+    next: NextFunction) {
     try {
-      let opt: FindCatOptions = {};
-      if (req.user) {
-        if (req.user.role === Role.Admin)
-          opt = plainToClass(FindCatOptions, req.query, { excludeExtraneousValues: true });
-      } else
-        opt = {
-          onValidation: undefined, onlyChecked: undefined,
-          ...plainToClass(FindCatOptions, req.query, { excludeExtraneousValues: true })
-        };
+      if (!user || user?.role !== Role.Admin)
+        delete query.onValidation;
 
-      const cat = await this.service.findAll(opt);
+      const opt = plainToClass(FindCatOptions, query);
+      let cat = {};
+      if (Object.keys(opt).length === 0 && user?.role === Role.Admin)
+        cat = await this.service.findAll();
+      else
+        cat = await this.service.findByCondition(opt);
+
       this.send(res, 200, cat);
     } catch (error) {
       next(error);
@@ -103,6 +110,17 @@ export class CatController extends BaseController {
       const [{ name }] = raw;
       await this.fileService.deleteFile(name);
       this.send(res, 200, `Cat ${name} deleted.`);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req: Request<any, {}, Partial<Cat>>, res: Response, next: NextFunction) {
+    try {
+      req.body.id = +req.params.catId;
+      const updatedCat = await this.service.update(req.body);
+
+      this.send(res, 200, `Cat with id - ${updatedCat.id} successfully updated`);
     } catch (error) {
       next(error);
     }

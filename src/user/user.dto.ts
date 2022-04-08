@@ -1,6 +1,5 @@
 import { Expose } from 'class-transformer';
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
-import { Role } from './user.entity';
 
 export class UserCreateDTO {
   @Expose()
@@ -11,9 +10,6 @@ export class UserCreateDTO {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  @Expose()
-  role: Role;
 
   @Expose()
   @IsNotEmpty()

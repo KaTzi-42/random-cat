@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { ImageFormat } from './cats.entity';
 
-export class CatDTO {
+export class CatCreateDTO {
   @IsString()
   @IsNotEmpty()
   name: string;

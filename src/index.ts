@@ -12,6 +12,8 @@ import { ExeptionFilter } from './error/exeptionFilter';
 import { UserService } from './user/user.service';
 import { ConfigService } from './common/config.service';
 import { fileFilter, storage } from './utils/file.options';
+import { AuthController } from './auth/auth.controller';
+import { AuthService } from './auth/auth.service';
 
 const startUp = async () => {
   const config = ConfigService.getInstance();
@@ -29,6 +31,8 @@ const startUp = async () => {
     logger,
     new CatController(new CatService(), file, logger),
     new UserController(new UserService(config), logger),
+    new AuthController(
+      new AuthService(new UserService(config)), config, logger),
     new ExeptionFilter(logger),
     config
   );

@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { ConfigService } from '../common/config.service';
 import { validateOrReject, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { CatDTO } from '../cats/cats.dto';
+import { CatCreateDTO } from '../cats/cats.dto';
 import { HttpError } from '../error/httpError';
 
 const config = ConfigService.getInstance();
@@ -30,7 +30,7 @@ export const fileFilter = async (
   cb: multer.FileFilterCallback) => {
   try {
     req.body.type = file.mimetype.split('/')[1];
-    await validateOrReject(plainToClass(CatDTO, req.body));
+    await validateOrReject(plainToClass(CatCreateDTO, req.body));
 
     await fsp.access(config.get('UPLOAD_PATH') + `/${req.body.name}.${req.body.type}`);
     throw new HttpError(422, `Cat with name ${req.body.name} exist`);

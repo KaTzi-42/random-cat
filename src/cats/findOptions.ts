@@ -1,18 +1,13 @@
-import { Expose, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { ImageFormat } from './cats.entity';
 
 export class FindCatOptions {
-  @Expose()
+  @Transform(({ value }) => ([true, 'true', 1].indexOf(value) > -1))
   onValidation?: boolean | 1 | 0;
 
-  @Expose()
-  onlyChecked?: boolean | 1 | 0;
-
-  @Expose()
-  @Transform(({ value }) => (value ? value.toUpperCase() : undefined))
+  @Transform(({ value }) => (value ? value.toUpperCase() : value), { toPlainOnly: true })
   sort?: 'ASC' | 'DESC';
 
-  @Expose()
-  @Transform(({ value }) => (value ? value.toLowerCase() : undefined))
+  @Transform(({ value }) => (value ? value.toLowerCase() : value))
   type?: keyof typeof ImageFormat;
 }

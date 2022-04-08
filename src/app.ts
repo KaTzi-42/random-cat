@@ -6,6 +6,7 @@ import { ExeptionFilter } from './error/exeptionFilter';
 import { LoggerService } from './logger/logger.service';
 import { UserController } from './user/user.controller';
 import cors from 'cors';
+import { AuthController } from './auth/auth.controller';
 
 export class App {
   private app: express.Application;
@@ -15,6 +16,7 @@ export class App {
     private logger: LoggerService,
     private catController: CatController,
     private userController: UserController,
+    private authController: AuthController,
     private exeptionFilter: ExeptionFilter,
     private config: ConfigService,
   ) {
@@ -32,6 +34,7 @@ export class App {
   private useRoutes() {
     this.app.use('/api/v1/', this.catController.router);
     this.app.use('/api/v1/', this.userController.router);
+    this.app.use('/api/v1/', this.authController.router);
   }
 
   public async initialize(port?: number) {

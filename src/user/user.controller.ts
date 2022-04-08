@@ -41,18 +41,6 @@ export class UserController extends BaseController {
     }
   }
 
-  async login(req: Request<any, {}, UserLoginDTO>, res: Response, next: NextFunction) {
-    try {
-      const result = await this.userService.validate(req.body);
-      if (!result)
-        return next(new HttpError(401, 'Authorisation Error'));
-
-      this.ok(res, 'Logging Succes');
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async delete(req: Request, res: Response, next: NextFunction) {
     throw new HttpError(500, 'Delete method empty');
   }
