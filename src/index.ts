@@ -29,7 +29,7 @@ const startUp = async () => {
   const logger = LoggerService.getInstance();
   const app = new App(
     logger,
-    new CatController(new CatService(), file, logger),
+    new CatController(new CatService(file), file, logger),
     new UserController(new UserService(config), logger),
     new AuthController(
       new AuthService(new UserService(config)), config, logger),

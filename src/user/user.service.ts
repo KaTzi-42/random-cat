@@ -22,11 +22,23 @@ export class UserService {
     return this.repository.save({ password: hashPassword, ...dto });
   }
 
-  async findById(id: number) {
+  delete(id: number) {
+    return this.repository.createQueryBuilder()
+      .delete()
+      .where('id = :id', { id })
+      .returning('id')
+      .execute();
+  }
+
+  update(dto: Partial<User>) {
+    return this.repository.save(dto);
+  }
+
+  findById(id: number) {
     return this.repository.findOne(id);
   }
 
-  async findByEmail(email: string) {
+  findByEmail(email: string) {
     return this.repository.findOne({ where: { email } });
   }
 }

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import fsp from 'fs/promises';
+import fsp, { rename } from 'fs/promises';
 import multer, { Options } from 'multer';
 import path from 'path';
 import { ConfigService } from '../common/config.service';
@@ -39,12 +39,18 @@ export class FileManager {
    * @param fieldName Only name of the file like 'bigCat01.jpg'
    */
   readFile(fileName: string) {
-    const filePath = path.resolve(__dirname, `../../${config.get('UPLOAD_PATH')}/${fileName}`);
-    return fs.createReadStream(filePath);
+    //const filePath = path.resolve(__dirname, `../../${config.get('UPLOAD_PATH')}/${fileName}`);
+    return fs.createReadStream(`${config.get('UPLOAD_PATH')}/${fileName}`);
   }
 
-  async deleteFile(fileName: string) {
-    const filePath = path.resolve(__dirname, `../../${config.get('UPLOAD_PATH')}/${fileName}`);
-    return fsp.unlink(filePath);
+  deleteFile(fileName: string) {
+    fsp.unlink(`${config.get('UPLOAD_PATH')}/${fileName}`);
+  }
+
+  renameFile(fileName: string, newFileName: string) {
+
+    rename(
+      `${config.get('UPLOAD_PATH')}/${fileName}`,
+      `${config.get('UPLOAD_PATH')}/${newFileName}`);
   }
 }

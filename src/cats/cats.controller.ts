@@ -48,6 +48,7 @@ export class CatController extends BaseController {
         path: '/cats/:catId',
         method: 'patch',
         func: this.update
+        //TODO добавить Проверку админа
       }
     ]);
   }
@@ -105,11 +106,11 @@ export class CatController extends BaseController {
     try {
       const { raw } = await this.service.delete(+req.params.catId);
       if (!raw.length)
-        return next(new HttpError(400, `Error, no cat with id - ${+req.params.catId}`));
+        return next(new HttpError(404, `Error, no cat with id - ${req.params.catId}`));
 
       const [{ name }] = raw;
       await this.fileService.deleteFile(name);
-      this.send(res, 200, `Cat ${name} deleted.`);
+      this.ok(res, `Cat ${name} deleted.`);
     } catch (error) {
       next(error);
     }
@@ -119,8 +120,10 @@ export class CatController extends BaseController {
     try {
       req.body.id = +req.params.catId;
       const updatedCat = await this.service.update(req.body);
+      if (!updatedCat)
+        return next(new HttpError(404, `Error, no cat with id - ${req.body.id}`));
 
-      this.send(res, 200, `Cat with id - ${updatedCat.id} successfully updated`);
+      this.ok(res, `Cat with id - ${updatedCat.id} successfully updated`);
     } catch (error) {
       next(error);
     }

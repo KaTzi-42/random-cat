@@ -1,4 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
+import { FileManager } from '../utils/fileManager';
 import { CatCreateDTO } from './cats.dto';
 import { Cat } from './cats.entity';
 import { FindCatOptions } from './findOptions';
@@ -6,7 +7,7 @@ import { FindCatOptions } from './findOptions';
 export class CatService {
   private repository: Repository<Cat>;
 
-  constructor() {
+  constructor(private fileService: FileManager) {
     this.repository = getRepository('cat');
   }
 
@@ -22,7 +23,16 @@ export class CatService {
       .execute();
   }
 
-  update(dto: Partial<Cat>) {
+  async update(dto: Partial<Cat>): Promise<Cat | null> {
+    const cat = await this.findById(dto.id!);
+    if (!cat)
+      return null;
+
+    if (dto.name) {
+      dto.name = `${dto.name}.${cat.type}`;
+      if (cat?.name.localeCompare(dto.name))
+        await this.fileService.renameFile(cat.name, dto.name);
+    }
     return this.repository.save(dto);
   }
 

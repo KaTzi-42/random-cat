@@ -1,5 +1,6 @@
-import { Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { Role } from './user.entity';
 
 export class UserCreateDTO {
   @Expose()
@@ -25,4 +26,22 @@ export class UserLoginDTO {
 
   @IsNotEmpty()
   password: string;
+}
+
+export class UserUpdateDTO {
+  @Expose()
+  id: number;
+
+  @Expose()
+  @IsNotEmpty()
+  name: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @Expose()
+  @IsOptional()
+  role?: Role;
 }

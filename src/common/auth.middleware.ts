@@ -12,18 +12,25 @@ export interface ITokenPlayload {
 export class AuthMiddleware implements IMiddleware {
   constructor(private secretJWT: string) { }
 
-  middle(req: Request, res: Response, next: NextFunction) {
+  async middle(req: Request, res: Response, next: NextFunction) {
     try {
       if (req.headers.authorization) {
-        const playload = verify(
-          req.headers.authorization.split(' ')[1],
-          this.secretJWT) as ITokenPlayload;
-
+        const playload = await this.verifyJWT(req.headers.authorization.split(' ')[1]);
         req.user = { email: playload.email, role: playload.role };
       }
       next();
     } catch (error) {
       next();
     }
+  }
+
+  private verifyJWT(token: string): Promise<ITokenPlayload> {
+    return new Promise((resolve, reject) => {
+      verify(token, this.secretJWT, (error, playload) => {
+        if (error)
+          reject(error);
+        resolve(playload as ITokenPlayload);
+      });
+    });
   }
 }
