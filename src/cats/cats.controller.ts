@@ -1,5 +1,6 @@
 import { plainToClass } from 'class-transformer';
 import { Request, Response, NextFunction } from 'express';
+import { AuthGuard } from '../common/auth.guard';
 import { BaseController } from '../common/base.controller';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { HttpError } from '../error/httpError';
@@ -42,13 +43,13 @@ export class CatController extends BaseController {
         path: '/cats/:catId',
         method: 'delete',
         func: this.delete,
-        //TODO добавить Проверку админа
+        middleware: [ new AuthGuard([Role.Admin])]
       },
       {
         path: '/cats/:catId',
         method: 'patch',
-        func: this.update
-        //TODO добавить Проверку админа
+        func: this.update,
+        middleware: [new AuthGuard([Role.Admin, Role.User])]
       }
     ]);
   }
