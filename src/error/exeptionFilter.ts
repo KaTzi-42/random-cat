@@ -7,7 +7,7 @@ export class ExeptionFilter {
 
   catch(err: HttpError | Error, req: Request, res: Response, next: NextFunction) {
     if (err instanceof HttpError) {
-      this.logger.error(`Error - ${err.code} : ${err.message}`, err.context);
+      this.logger.error(`Error -  ${err.code} : ${err.message}`, err.context);
       res.status(err.code).json({ err: err.message, context: err.context });
     } else {
       this.logger.error(`${err}`);
