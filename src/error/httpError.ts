@@ -1,4 +1,5 @@
 export class HttpError extends Error {
+
   code: number;
   context?: unknown;
 

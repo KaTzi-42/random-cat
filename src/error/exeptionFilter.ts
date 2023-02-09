@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { LoggerService } from '../logger/logger.service';
 import { HttpError } from './httpError';
 
 export class ExeptionFilter {
+
   constructor(private logger: LoggerService) { }
 
   catch(err: HttpError | Error, req: Request, res: Response, next: NextFunction) {
